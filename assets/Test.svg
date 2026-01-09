@@ -1,0 +1,102 @@
+<svg
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Colors -->
+  <defs>
+    <style>
+      .bg { fill: #0b1b3b; }      /* deep navy */
+      .fg { fill: #ffffff; }      /* white (for mask) */
+      .text { fill: #0b1b3b; }    /* same navy for text */
+    </style>
+  </defs>
+
+  <!-- Hexagon background -->
+  <polygon
+    class="bg"
+    points="
+      256,40
+      416,136
+      416,320
+      256,416
+      96,320
+      96,136
+    "
+  />
+
+  <!-- Geometric mask (abstract, faceted face) -->
+  <!-- Outer face shape -->
+  <polygon
+    class="fg"
+    points="
+      256,120
+      336,160
+      360,220
+      336,300
+      256,360
+      176,300
+      152,220
+      176,160
+    "
+  />
+
+  <!-- Inner face facets (cheekbones + chin) -->
+  <polygon
+    class="bg"
+    points="
+      256,150
+      310,176
+      324,220
+      310,270
+      256,310
+      202,270
+      188,220
+      202,176
+    "
+  />
+
+  <!-- Visor (horizontal bar across upper face) -->
+  <rect
+    class="bg"
+    x="200"
+    y="185"
+    width="112"
+    height="24"
+    rx="4"
+  />
+
+  <!-- Nose ridge (small central vertical detail) -->
+  <rect
+    class="bg"
+    x="248"
+    y="210"
+    width="16"
+    height="52"
+    rx="3"
+  />
+
+  <!-- Jaw facet detail -->
+  <polygon
+    class="bg"
+    points="
+      230,260
+      282,260
+      270,285
+      242,285
+    "
+  />
+
+  <!-- Text: k8s-frontman -->
+  <text
+    x="50%"
+    y="480"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="36"
+    class="text"
+  >
+    k8s-frontman
+  </text>
+</svg>
