@@ -1,0 +1,11 @@
+@Frontman_HostAddress = http://localhost:5133
+
+POST {{Frontman_HostAddress}}/releases/test
+Content-Type: application/json 
+
+{
+  "Version": "v1.0.1"
+}
+
+
+###

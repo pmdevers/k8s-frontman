@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<PropertyGroup>
+		<PackageVersion Condition=" '$(PackageVersion)' == '' ">1.0.0</PackageVersion>
+		<OperatorName Condition=" '$(OperatorName)' == '' ">$(MSBuildProjectName.Replace(" ", "_").ToLower())</OperatorName>
+		<OperatorNamespace Condition=" '$(OperatorNamespace)' == '' ">$(MSBuildProjectName.Replace(" ", "_").ToLower())-system</OperatorNamespace>
+
+		<ContainerRegistry Condition=" '$(ContainerRegistry)' == '' ">ghcr.io</ContainerRegistry>
+		<ContainerRepository Condition=" '$(ContainerRepository)' == '' ">$(Company)/$(OperatorName)</ContainerRepository>
+		<ContainerImageTag Condition=" '$(ContainerImageTag)' == '' ">$(PackageVersion)</ContainerImageTag>
+		<ContainerFamily Condition=" '$(ContainerFamily)' == '' "></ContainerFamily>
+	</PropertyGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="Frontman.Operator.Metadata.OperatorNameAttribute">
+			<_Parameter1>$(OperatorName)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="Frontman.Operator.Metadata.NamespaceAttribute">
+			<_Parameter1>$(OperatorNamespace)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="Frontman.Operator.Metadata.DockerImageAttribute">
+			<_Parameter1>$(ContainerRegistry)</_Parameter1>
+			<_Parameter2>$(ContainerRepository)</_Parameter2>
+			<_Parameter3>$(ContainerImageTag)$(ContainerFamily)</_Parameter3>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+</Project>
