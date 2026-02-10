@@ -34,7 +34,7 @@ RUN DOTNET_RID=$(cat /tmp/rid) && \
     chmod +x /app/publish/k8sFrontman
 
 # Runtime stage - use smaller runtime-deps image for self-contained apps
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled AS final
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled-extra AS final
 WORKDIR /app
 
 # OCI annotations / labels
