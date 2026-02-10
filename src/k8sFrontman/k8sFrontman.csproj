@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>k8s.Frontman</RootNamespace>
+
+    <CreateOperatorLaunchSettings>true</CreateOperatorLaunchSettings>
+    <GenerateOperatorDockerfile>true</GenerateOperatorDockerfile>
+    <PublishSingleFileExecutable>true</PublishSingleFileExecutable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+    <PackageReference Include="k8sOperator" Version="1.0.0-alpha0001" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

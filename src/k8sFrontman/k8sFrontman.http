@@ -1,0 +1,6 @@
+@k8sFrontman_HostAddress = http://localhost:5000
+
+GET {{k8sFrontman_HostAddress}}/releases/
+Accept: application/json
+
+###
