@@ -11,6 +11,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Add(ReleaseJsonSerializerContext.Default);
 });
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.AddServerHeader = false;
