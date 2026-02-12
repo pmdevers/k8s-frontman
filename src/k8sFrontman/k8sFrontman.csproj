@@ -18,14 +18,16 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
-    <PackageReference Include="k8sOperator" Version="1.0.0-alpha0006" />
-    
+    <PackageReference Include="k8sOperator" Version="1.0.0-alpha0007" />
   </ItemGroup>
 
   <ItemGroup>
+      <TrimmerRootDescriptor Include="TrimmerRoots.xml" />  
+    
       <TrimmerRootAssembly Include="k8sOperator" />
       <TrimmerRootAssembly Include="KubernetesClient" />
       <TrimmerRootAssembly Include="YamlDotNet" />
+      
   </ItemGroup>
 
 </Project>
