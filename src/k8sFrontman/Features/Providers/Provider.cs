@@ -7,6 +7,7 @@ using k8s.Operator.Models;
 
 namespace k8s.Frontman.Features.Providers;
 
+
 [KubernetesEntity(Group = "frontman.io", ApiVersion = "v1alpha1", Kind = "Provider", PluralName = "providers")]
 [AdditionalPrinterColumn(Name = "Refresh", Path = ".spec.interval", Description = "", Type = "string")]
 [AdditionalPrinterColumn(Name = "Releases", Path = ".status.numberOfReleases", Description = "", Type = "string")]
