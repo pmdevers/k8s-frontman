@@ -49,14 +49,31 @@ jobs:
           dotnet publish src/k8sFrontman/k8sFrontman.csproj -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -p:FileVersion=${{ steps.extract_version.outputs.VERSION }} -o ./cli/linux-x64
           dotnet publish src/k8sFrontman/k8sFrontman.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:FileVersion=${{ steps.extract_version.outputs.VERSION }} -o ./cli/win-x64
           dotnet publish src/k8sFrontman/k8sFrontman.csproj -c Release -r osx-x64 --self-contained -p:PublishSingleFile=true -p:FileVersion=${{ steps.extract_version.outputs.VERSION }} -o ./cli/osx-x64
+          dotnet publish src/k8sFrontman/k8sFrontman.csproj -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true -p:FileVersion=${{ steps.extract_version.outputs.VERSION }} -o ./cli/osx-arm64
 
       - name: Prepare Release Binaries
         if: startsWith(github.ref, 'refs/tags/')
         run: |
+          VERSION=${{ steps.extract_version.outputs.VERSION }}
           mkdir -p ./release
-          cp ./cli/linux-x64/k8sFrontman ./release/k8sFrontman-linux-x64
-          cp ./cli/win-x64/k8sFrontman.exe ./release/k8sFrontman-windows-x64.exe
-          cp ./cli/osx-x64/k8sFrontman ./release/k8sFrontman-macos-x64
+          
+          # Rename binaries to k8s-frontman for consistency
+          mv ./cli/linux-x64/k8sFrontman ./cli/linux-x64/k8s-frontman
+          mv ./cli/win-x64/k8sFrontman.exe ./cli/win-x64/k8s-frontman.exe
+          mv ./cli/osx-x64/k8sFrontman ./cli/osx-x64/k8s-frontman
+          mv ./cli/osx-arm64/k8sFrontman ./cli/osx-arm64/k8s-frontman
+          
+          # Create tar.gz archives with expected naming convention
+          cd ./cli/linux-x64 && tar -czf ../../release/k8s-frontman_${VERSION}_linux_amd64.tar.gz k8s-frontman && cd ../..
+          cd ./cli/win-x64 && tar -czf ../../release/k8s-frontman_${VERSION}_windows_amd64.tar.gz k8s-frontman.exe && cd ../..
+          cd ./cli/osx-x64 && tar -czf ../../release/k8s-frontman_${VERSION}_darwin_amd64.tar.gz k8s-frontman && cd ../..
+          cd ./cli/osx-arm64 && tar -czf ../../release/k8s-frontman_${VERSION}_darwin_arm64.tar.gz k8s-frontman && cd ../..
+          
+          # Generate checksums file
+          cd ./release
+          sha256sum k8s-frontman_${VERSION}_*.tar.gz > k8s-frontman_${VERSION}_checksums.txt
+          cat k8s-frontman_${VERSION}_checksums.txt
+          cd ..
 
       - name: Upload CLI Artifacts
         if: startsWith(github.ref, 'refs/tags/')
@@ -101,6 +118,5 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            ./release/k8sFrontman-linux-x64
-            ./release/k8sFrontman-windows-x64.exe
-            ./release/k8sFrontman-macos-x64
+            ./release/k8s-frontman_${{ steps.extract_version.outputs.VERSION }}_*.tar.gz
+            ./release/k8s-frontman_${{ steps.extract_version.outputs.VERSION }}_checksums.txt
