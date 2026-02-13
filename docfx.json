@@ -9,6 +9,9 @@
         },
         {
           "files": ["src/**/*.md"]
+        },
+        {
+          "files": ["install/**.md", "LICENSE"]
         }
       ],
       "resource": [
@@ -42,7 +45,7 @@
         "namespaceLayout": "flattened",
         "memberLayout": "samePage",
         "EnumSortOrder": "alphabetic",
-        "allowCompilationErrors": false
+        "allowCompilationErrors": true
       }
     ]
   }

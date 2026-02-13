@@ -93,7 +93,7 @@ Once deployed, your static content will be available at the configured path thro
 
 ## Configuration
 
-Configuration is done through Kubernetes Custom Resources. For detailed configuration options, see the [documentation](docs/).
+Configuration is done through Kubernetes Custom Resources. For detailed configuration options, see the [documentation](docs/introduction.md).
 
 ### Supported Providers
 
