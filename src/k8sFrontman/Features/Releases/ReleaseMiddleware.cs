@@ -30,7 +30,7 @@ public class ReleaseMiddleware(RequestDelegate next,
             return;
         }
 
-        var fileProvider = (provider.Spec.File?.Create() ?? provider.Spec.AzureBlob?.Create());
+        var fileProvider = provider.GetFileProvider();
 
         if (fileProvider is null)
         {

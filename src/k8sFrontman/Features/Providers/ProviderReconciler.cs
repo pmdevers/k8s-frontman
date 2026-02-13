@@ -20,12 +20,7 @@ public static partial class ProviderReconciler
             .AddAnnotation("last-reconcile", DateTime.UtcNow.ToString("o"))
             .ApplyAsync();
 
-        var fileprovider = provider.Spec.Type switch
-        {
-            ProviderTypes.File => provider.Spec.File.Create(),
-            ProviderTypes.AzureBlob => provider.Spec.AzureBlob.Create(),
-            _ => null
-        };
+        var fileprovider = provider.GetFileProvider();
 
         if (fileprovider is not null)
         {

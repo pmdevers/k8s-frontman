@@ -4,6 +4,7 @@ using k8s.Models;
 using k8s.Operator.Generation.Attributes;
 using k8s.Operator.Metadata;
 using k8s.Operator.Models;
+using Microsoft.Extensions.FileProviders;
 
 namespace k8s.Frontman.Features.Providers;
 
@@ -16,6 +17,7 @@ public class Provider : CustomResource<Provider.Specs, Provider.State>
     public class Specs
     {
         public ProviderTypes Type { get; set; }
+
         public FileProviderOptions? File { get; set; } = new FileProviderOptions();
         public AzureBlobFileProviderOptions? AzureBlob { get; set; } = new AzureBlobFileProviderOptions();
 
@@ -28,6 +30,16 @@ public class Provider : CustomResource<Provider.Specs, Provider.State>
     {
         public int NumberOfReleases { get; set; } = 0;
         public string[] Versions { get; set; } = [];
+    }
+
+    public IFileProvider? GetFileProvider()
+    {
+        return Spec.Type switch
+        {
+            ProviderTypes.File => Spec.File?.Create(),
+            ProviderTypes.AzureBlob => Spec.AzureBlob?.Create(),
+            _ => null
+        };
     }
 }
 
