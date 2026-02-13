@@ -1,41 +1,59 @@
 {
-  "profiles": {
-    "Operator": {
-      "commandName": "Project",
-      "commandLineArgs": "operator",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
-      },
-      "dotnetRunMessages": true
+    "profiles": {
+        "Operator": {
+            "commandName": "Project",
+            "commandLineArgs": "operator",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
+        "Install": {
+            "commandName": "Project",
+            "commandLineArgs": "install > install.yaml",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
+        "Create Provider": {
+            "commandName": "Project",
+            "commandLineArgs": "create provider > provider.yaml",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
+        "Create Release": {
+            "commandName": "Project",
+            "commandLineArgs": "create release > release.yaml",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
+        "Version": {
+            "commandName": "Project",
+            "commandLineArgs": "version",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
+        "Help": {
+            "commandName": "Project",
+            "commandLineArgs": "help",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        }
     },
-    "Install": {
-      "commandName": "Project",
-      "commandLineArgs": "install > install.yaml",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
-      },
-      "dotnetRunMessages": true
-    },
-    "Version": {
-      "commandName": "Project",
-      "commandLineArgs": "version",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
-      },
-      "dotnetRunMessages": true
-    },
-    "Help": {
-      "commandName": "Project",
-      "commandLineArgs": "help",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
-      },
-      "dotnetRunMessages": true
-    }
-  },
   "$schema": "http://json.schemastore.org/launchsettings.json"
 }

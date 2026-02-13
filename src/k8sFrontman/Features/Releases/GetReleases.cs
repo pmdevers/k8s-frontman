@@ -1,6 +1,5 @@
 ﻿using k8s.Operator.Informer;
 using Microsoft.AspNetCore.Http.HttpResults;
-using System.Text.Json.Serialization;
 
 namespace k8s.Frontman.Features.Releases;
 
@@ -14,14 +13,4 @@ public static class GetReleases
 
         return TypedResults.Ok(releasesList);
     }
-
-
-}
-
-public record ReleaseResponse(string Name, string Url, string CurrentVersion, string PreviousVersion);
-
-[JsonSerializable(typeof(List<ReleaseResponse>))]
-[JsonSerializable(typeof(ReleaseResponse))]
-internal partial class ReleaseJsonSerializerContext : JsonSerializerContext
-{
 }

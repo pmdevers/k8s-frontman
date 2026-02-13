@@ -2,7 +2,6 @@ using k8s.Frontman.Features.Install;
 using k8s.Frontman.Features.Providers;
 using k8s.Frontman.Features.Releases;
 using k8s.Operator;
-using k8s.Operator.Generation;
 
 var builder = WebApplication.CreateBuilder(args);
 

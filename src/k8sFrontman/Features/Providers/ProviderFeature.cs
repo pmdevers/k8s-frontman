@@ -1,5 +1,4 @@
 ﻿using k8s.Operator;
-using Microsoft.Extensions.FileProviders;
 
 namespace k8s.Frontman.Features.Providers;
 
@@ -13,9 +12,4 @@ public static class ProviderFeature
             app.ReconcilerFor<Provider>(ProviderReconciler.ReconcileAsync);
         }
     }
-}
-
-public interface IFileProviderFactory
-{
-    IFileProvider Create();
 }

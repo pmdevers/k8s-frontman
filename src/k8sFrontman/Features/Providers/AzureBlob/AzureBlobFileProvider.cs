@@ -1,7 +1,6 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using k8s.Frontman.Features.Providers;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 

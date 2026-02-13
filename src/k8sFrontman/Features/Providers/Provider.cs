@@ -15,8 +15,9 @@ public class Provider : CustomResource<Provider.Specs, Provider.State>
 {
     public class Specs
     {
-        public FileProviderOptions? File { get; set; }
-        public AzureBlobFileProviderOptions? AzureBlob { get; set; }
+        public ProviderTypes Type { get; set; }
+        public FileProviderOptions? File { get; set; } = new FileProviderOptions();
+        public AzureBlobFileProviderOptions? AzureBlob { get; set; } = new AzureBlobFileProviderOptions();
 
         [ResyncInterval]
         [Default("5m")]
@@ -28,4 +29,10 @@ public class Provider : CustomResource<Provider.Specs, Provider.State>
         public int NumberOfReleases { get; set; } = 0;
         public string[] Versions { get; set; } = [];
     }
+}
+
+public enum ProviderTypes
+{
+    File = 0,
+    AzureBlob = 1,
 }
