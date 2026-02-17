@@ -1,73 +1,70 @@
 ﻿using k8s.Frontman.Features.Providers;
 using k8s.Models;
-using k8s.Operator;
+using k8s.Operator.Generation;
+using k8s.Operator.Reconciler;
 
 namespace k8s.Frontman.Features.Releases;
 
 public static class ReleaseReconciler
 {
-    public static async Task ReconcileAsync(OperatorContext context)
+    public static async Task ReconcileAsync(ReconcileContext<V1Release> context)
     {
-        var infromer = context.GetInformer<Release>();
-        var providers = context.GetInformer<Provider>();
+        var informer = context.GetInformer<V1Release>();
+        var providers = context.GetInformer<V1Provider>();
 
-        if (context.Resource is not Release newVersion)
+        var current = informer.Indexer.Get(context.Resource);
+        var provider = providers.Indexer.Get(context.Resource.Spec.Provider, context.Resource.Metadata.NamespaceProperty);
+
+        context.Update(x =>
         {
-            return;
-        }
-
-        var current = infromer.Get(newVersion.Metadata.Name, newVersion.Metadata.NamespaceProperty);
-        var provider = providers.Get(newVersion.Spec.Provider, newVersion.Metadata.NamespaceProperty);
+            x.WithLabel("managed-by", context.Configuration.Name);
+            x.WithLabel("processed", "true");
+            x.WithLabel($"{context.Resource.ApiGroup()}/provider", context.Resource.Spec.Provider);
+        });
 
         if (provider is null)
         {
-            await context.Update<Release>()
-                .WithStatus(x =>
+            context.Update(x =>
+            {
+                x.WithStatus(x =>
                 {
-                    x.Status ??= new();
-                    x.Status.Message = $"Provider '{newVersion.Spec.Provider}' not found.";
-                }).ApplyAsync();
+                    x.Message = $"Provider '{context.Resource.Spec.Provider}' not found.";
+                });
+            });
 
             return;
         }
 
-        await context.Update<Release>()
-           .AddLabel("managed-by", context.Configuration.Name)
-           .AddLabel("processed", "true")
-           .AddLabel($"{newVersion.ApiGroup()}/provider", newVersion.Spec.Provider)
-           .AddAnnotation("last-reconcile", DateTime.UtcNow.ToString("o"))
-           .ApplyAsync();
-
-        if (!provider.Status!.Versions.Contains(newVersion.Spec.Version))
+        if (!provider.Status!.Versions.Contains(context.Resource.Spec.Version))
         {
-            await context.Update<Release>()
-            .WithStatus(x =>
+            context.Update(x =>
             {
-                x.Status ??= new();
-                x.Status.Message = $"Version '{newVersion.Spec.Version}' not found.";
-                if (current?.Status?.CurrentVersion != newVersion.Spec.Version)
+                x.WithStatus(x =>
                 {
-                    x.Status.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
-                }
-            }).ApplyAsync();
+                    x.Message = $"Version '{context.Resource.Spec.Version}' not found.";
+                    if (current?.Status?.CurrentVersion != context.Resource.Spec.Version)
+                    {
+                        x.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
+                    }
+                });
+            });
 
-            await context.Queue.Requeue(context.ResourceKey, TimeSpan.FromSeconds(30), context.CancellationToken);
+            await context.Queue.Requeue(context.Resource, TimeSpan.FromSeconds(30), context.CancellationToken);
 
             return;
         }
 
-        await context.Update<Release>()
-            .WithStatus(x =>
+        context.Update(x =>
+        {
+            x.WithStatus(x =>
             {
-                x.Status ??= new();
-
-                if (current?.Status?.CurrentVersion != newVersion.Spec.Version)
+                x.Message = string.Empty;
+                x.CurrentVersion = context.Resource.Spec.Version;
+                if (current?.Status?.CurrentVersion != context.Resource.Spec.Version)
                 {
-                    x.Status.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
+                    x.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
                 }
-
-                x.Status.CurrentVersion = newVersion.Spec.Version;
-                x.Status.Message = string.Empty;
-            }).ApplyAsync();
+            });
+        });
     }
 }

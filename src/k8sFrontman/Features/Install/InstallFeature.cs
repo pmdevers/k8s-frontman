@@ -1,51 +1,47 @@
-﻿using k8s.Models;
-using k8s.Operator.Builders;
+﻿using k8s.Frontman.Features.Providers;
+using k8s.Frontman.Features.Releases;
+using k8s.Models;
+using k8s.Operator.Configuration;
 using k8s.Operator.Generation;
 
 namespace k8s.Frontman.Features.Install;
 
 public static class InstallFeature
 {
-    extension(OperatorBuilder builder)
+    extension(OperatorConfiguration config)
     {
-        public OperatorBuilder WithDeployment()
+        public OperatorConfiguration WithDeployment()
         {
-            builder.InstallCommand.Deployment = deployment =>
+            config.Install.Resources.Add(typeof(V1Provider));
+            config.Install.Resources.Add(typeof(V1Release));
+
+            config.Install.ConfigureDeployment = deployment =>
             {
-                deployment.Add(d =>
+                deployment.Spec.Template.Spec.Containers[0].Ports ??= [];
+                deployment.Spec.Template.Spec.Containers[0].Ports.Add(new()
                 {
-                    d.Spec.Template.Spec.Containers[0].Ports ??= [];
-                    d.Spec.Template.Spec.Containers[0].Ports.Add(new()
-                    {
-                        ContainerPort = 8080,
-                        Name = "http",
-                    });
+                    ContainerPort = 8080,
+                    Name = "http",
                 });
             };
-            return builder;
+            return config;
         }
 
-        public OperatorBuilder WithService()
+        public OperatorConfiguration WithService()
         {
-            builder.InstallCommand.AdditionalObjects.Add(
-                KubernetesObjectBuilder.CreateMeta<V1Service>()
-
-                    .WithName(builder.Operator.Name)
-                    .WithNamespace(builder.Operator.Namespace)
-                    .WithLabel("operator", builder.Operator.Name)
+            config.Install.AdditionalObjects.Add(
+                KubernetesObjectBuilder.Create<V1Service>()
+                    .WithName(config.Name)
+                    .WithNamespace(config.Namespace)
+                    .WithLabel("operator", config.Name)
                     .WithSpec(s =>
                     {
-                        s.AddSelector("operator", builder.Operator.Name);
-                        s.AddPort(p =>
-                        {
-                            p.WithName("http");
-                            p.WithPort(8080);
-                            p.WithTargetPort(8080);
-                        });
+                        s.WithSelector("operator", config.Name);
+                        s.WithPort(8080, 8080);
                     }).Build()
             );
 
-            return builder;
+            return config;
         }
     }
 }

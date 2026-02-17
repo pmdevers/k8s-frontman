@@ -20,10 +20,9 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddOperator(x =>
 {
-    x.Operator.Name = "k8s-frontman";
-    x.Operator.Namespace = "default";
-    x.Operator.ContainerRegistry = "ghcr.io";
-    x.Operator.ContainerRepository = "pmdevers/k8s-frontman";
+    x.Name = "k8s-frontman";
+    x.Container.Registry = "ghcr.io";
+
     x.WithDeployment();
     x.WithService();
 });

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.StaticFiles;
 namespace k8s.Frontman.Features.Releases;
 
 public class ReleaseMiddleware(RequestDelegate next,
-    IInformer<Release> releases,
-    IInformer<Provider> providers)
+    IInformer<V1Release> releases,
+    IInformer<V1Provider> providers)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -23,7 +23,7 @@ public class ReleaseMiddleware(RequestDelegate next,
         var remainder = url[release.Spec.Url.Length..];
         var newPath = string.Join('/', ["", release.Status?.CurrentVersion, remainder]);
 
-        var provider = providers.Get(release.Spec.Provider, release.Metadata.NamespaceProperty);
+        var provider = providers.Indexer.Get(release.Spec.Provider, release.Metadata.NamespaceProperty);
 
         if (provider is null)
         {
@@ -78,7 +78,7 @@ public class ReleaseMiddleware(RequestDelegate next,
         await stream.CopyToAsync(context.Response.Body);
     }
 
-    private Release? FindRelease(string urlPath)
+    private V1Release? FindRelease(string urlPath)
     {
         var segments = urlPath.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();
 
