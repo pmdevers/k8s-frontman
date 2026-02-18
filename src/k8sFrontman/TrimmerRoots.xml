@@ -2,8 +2,8 @@
 <linker>
 	<assembly fullname="k8sFrontman">
 		<!-- Preserve all CustomResource types -->
-		<type fullname="k8s.Frontman.Features.Providers.Provider" preserve="all" />
-		<type fullname="k8s.Frontman.Features.Releases.Release" preserve="all" />
+		<type fullname="k8s.Frontman.Features.Providers.V1Provider" preserve="all" />
+		<type fullname="k8s.Frontman.Features.Releases.V1Release" preserve="all" />
 
 		<!-- Preserve provider options -->
 		<type fullname="k8s.Frontman.Features.Providers.File.FileProviderOptions" preserve="all" />
