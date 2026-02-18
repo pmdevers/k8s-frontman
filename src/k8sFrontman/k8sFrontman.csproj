@@ -7,8 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>k8s.Frontman</RootNamespace>
 
-    <ContainerRepository>pmdevers/k8s-frontman</ContainerRepository>
-    
+    <Company>pmdevers</Company>
+
     <CreateOperatorLaunchSettings>true</CreateOperatorLaunchSettings>
     <GenerateOperatorDockerfile>true</GenerateOperatorDockerfile>
     

@@ -22,6 +22,7 @@ builder.Services.AddOperator(x =>
 {
     x.Name = "k8s-frontman";
     x.Container.Registry = "ghcr.io";
+    x.Container.Image = x.Name;
 
     x.WithDeployment();
     x.WithService();
