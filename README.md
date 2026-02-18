@@ -5,6 +5,8 @@ Manager for hosting versioned static content within Kubernetes
 ![License](https://img.shields.io/github/license/pmdevers/k8s-frontman)
 ![Release](https://img.shields.io/github/v/release/pmdevers/k8s-frontman)
 
+![Alt text](https://github.com/pmdevers/k8s-frontman/raw/main/assets/logo_256.png "k8s-frontman logo")
+
 ## Overview
 
 k8s-frontman is a Kubernetes operator that simplifies the deployment and management of versioned static content. It provides a declarative approach to hosting and serving static files from multiple sources, with built-in support for various storage providers.
