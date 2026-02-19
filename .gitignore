@@ -350,3 +350,5 @@ MigrationBackup/
 _site/
 
 docs/api/
+
+.vscode/
