@@ -10,6 +10,10 @@ on:
         description: 'Version to build'
         required: true
         type: string
+    outputs:
+      hashes:
+        description: 'Base64-encoded hashes for SLSA provenance'
+        value: ${{ jobs.build.outputs.hashes }}
 
 permissions:
   contents: read
@@ -17,6 +21,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      hashes: ${{ steps.hash.outputs.hashes }}
 
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +48,12 @@ jobs:
           build-args: |
             VERSION=${{ steps.version.outputs.version }}
           outputs: type=local,dest=src/k8sFrontman/cli
+
+      - name: Generate hashes for SLSA provenance
+        id: hash
+        run: |
+          cd src/k8sFrontman/cli
+          echo "hashes=$(sha256sum k8s-frontman_* | base64 -w0)" >> "$GITHUB_OUTPUT"
 
       - name: Upload CLI artifacts
         uses: actions/upload-artifact@v4
