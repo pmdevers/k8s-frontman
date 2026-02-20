@@ -52,7 +52,7 @@ function Test-SystemRequirements {
     # Get architecture
     $arch = $env:PROCESSOR_ARCHITECTURE
     switch ($arch) {
-        "AMD64" { $script:Arch = "amd64" }
+        "AMD64" { $script:Arch = "x64" }
         "ARM64" { $script:Arch = "arm64" }
         default { Write-Fatal "Unsupported architecture: $arch" }
     }
@@ -142,33 +142,33 @@ function Get-Checksum {
     
     # Extract expected hash for this platform from the checksums file
     $checksumContent = Get-Content $hashFile
-    $archiveFileName = "k8s-frontman_${script:Version}_${script:OS}_${script:Arch}.tar.gz"
-    $expectedHashLine = $checksumContent | Where-Object { $_ -match [regex]::Escape($archiveFileName) }
+    $binaryFileName = "k8s-frontman_${script:Version}_${script:OS}_${script:Arch}.exe"
+    $expectedHashLine = $checksumContent | Where-Object { $_ -match [regex]::Escape($binaryFileName) }
     
     if (-not $expectedHashLine) {
-        Write-Fatal "Checksum not found for $archiveFileName in checksums file"
+        Write-Fatal "Checksum not found for $binaryFileName in checksums file"
     }
     
-    $script:ArchiveFileName = $archiveFileName
+    $script:BinaryFileName = $binaryFileName
     $script:ExpectedHash = ($expectedHashLine -split '\s+')[0]
-    Write-Info "Found checksum for $archiveFileName"
+    Write-Info "Found checksum for $binaryFileName"
     Write-Info "Expected SHA256: $script:ExpectedHash"
 }
 
-# Download binary archive
+# Download binary
 function Get-Binary {
-    $binUrl = "https://github.com/$GitHubRepo/releases/download/v$script:Version/$script:ArchiveFileName"
-    $script:ArchivePath = Join-Path $script:TempDir $script:ArchiveFileName
+    $binUrl = "https://github.com/$GitHubRepo/releases/download/v$script:Version/$script:BinaryFileName"
+    $script:BinaryPath = Join-Path $script:TempDir $script:BinaryFileName
     
     Write-Info "Downloading binary from $binUrl"
-    Get-FileFromUrl -Url $binUrl -OutputPath $script:ArchivePath
+    Get-FileFromUrl -Url $binUrl -OutputPath $script:BinaryPath
 }
 
 # Verify downloaded binary checksum
 function Test-BinaryChecksum {
     Write-Info "Verifying binary checksum"
     
-    $actualHash = (Get-FileHash -Path $script:ArchivePath -Algorithm SHA256).Hash.ToLower()
+    $actualHash = (Get-FileHash -Path $script:BinaryPath -Algorithm SHA256).Hash.ToLower()
     
     if ($actualHash -ne $script:ExpectedHash.ToLower()) {
         Write-Fatal "Checksum mismatch! Expected: $script:ExpectedHash, Got: $actualHash"
@@ -177,7 +177,7 @@ function Test-BinaryChecksum {
     Write-Info "Checksum verified successfully"
 }
 
-# Extract and install binary
+# Install binary
 function Install-Binary {
     Write-Info "Installing k8s-frontman to $BinDir"
     
@@ -186,30 +186,9 @@ function Install-Binary {
         New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
     }
     
-    # Extract tar.gz archive
-    $extractDir = Join-Path $script:TempDir "extract"
-    New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
-    
-    Write-Info "Extracting tar.gz archive"
-    if (Get-Command tar.exe -ErrorAction SilentlyContinue) {
-        & tar.exe -xzf $script:ArchivePath -C $extractDir
-        if ($LASTEXITCODE -ne 0) {
-            Write-Fatal "Failed to extract archive using tar.exe"
-        }
-    } else {
-        Write-Fatal "tar.exe not found. Please install tar or use Windows 10 version 1803 or later."
-    }
-    
-    # Find the binary (could be .exe or without extension)
-    $binaryPath = Get-ChildItem -Path $extractDir -Filter "k8s-frontman*" -File | Select-Object -First 1
-    
-    if (-not $binaryPath) {
-        Write-Fatal "Failed to find k8s-frontman binary in extracted archive"
-    }
-    
     # Install binary
     $targetPath = Join-Path $BinDir "k8s-frontman.exe"
-    Copy-Item -Path $binaryPath.FullName -Destination $targetPath -Force
+    Copy-Item -Path $script:BinaryPath -Destination $targetPath -Force
     
     Write-Info "k8s-frontman installed successfully to $targetPath"
     

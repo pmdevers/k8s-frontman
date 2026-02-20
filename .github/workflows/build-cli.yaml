@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: src/k8sFrontman
-          file: src/k8sFrontman/Dockerfile
+          file: src/k8sFrontman/Dockerfile.cli
           target: cli-export
           push: false
           build-args: |

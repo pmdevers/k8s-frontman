@@ -23,16 +23,16 @@ jobs:
   version:
     uses: ./.github/workflows/version.yaml
 
-  build-operator:
-    needs: [test, version]
-    uses: ./.github/workflows/build-operator.yaml
-    secrets: inherit
-    with:
-      version: ${{ needs.version.outputs.version }}
-
   build-cli:
     needs: [test, version]
     uses: ./.github/workflows/build-cli.yaml
+    with:
+      version: ${{ needs.version.outputs.version }}
+
+  build-operator:
+    needs: [test, version, build-cli]
+    uses: ./.github/workflows/build-operator.yaml
+    secrets: inherit
     with:
       version: ${{ needs.version.outputs.version }}
 

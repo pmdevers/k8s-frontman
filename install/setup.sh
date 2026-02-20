@@ -59,10 +59,10 @@ setup_verify_arch() {
             ARCH=arm64
             ;;
         amd64)
-            ARCH=amd64
+            ARCH=x64
             ;;
         x86_64)
-            ARCH=amd64
+            ARCH=x64
             ;;
         *)
             fatal "Unsupported architecture ${ARCH}"
@@ -84,7 +84,7 @@ setup_tmp() {
     TMP_DIR=$(mktemp -d -t k8s-frontman-install.XXXXXXXXXX)
     TMP_METADATA="${TMP_DIR}/k8s-frontman.json"
     TMP_HASH="${TMP_DIR}/k8s-frontman.hash"
-    TMP_BIN="${TMP_DIR}/k8s-frontman.tar.gz"
+    TMP_BIN="${TMP_DIR}/k8s-frontman"
     cleanup() {
         local code=$?
         set +e
@@ -183,13 +183,13 @@ download_hash() {
     HASH_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/k8s-frontman_${VERSION}_checksums.txt"
     info "Downloading hash ${HASH_URL}"
     download "${TMP_HASH}" "${HASH_URL}"
-    HASH_EXPECTED=$(grep " k8s-frontman_${VERSION}_${OS}_${ARCH}.tar.gz$" "${TMP_HASH}")
+    HASH_EXPECTED=$(grep " k8s-frontman_${VERSION}_${OS}_${ARCH}$" "${TMP_HASH}")
     HASH_EXPECTED=${HASH_EXPECTED%%[[:blank:]]*}
 }
 
 # Download binary from Github URL
 download_binary() {
-    BIN_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/k8s-frontman_${VERSION}_${OS}_${ARCH}.tar.gz"
+    BIN_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/k8s-frontman_${VERSION}_${OS}_${ARCH}"
     info "Downloading binary ${BIN_URL}"
     download "${TMP_BIN}" "${BIN_URL}"
 }
@@ -222,18 +222,13 @@ verify_binary() {
 # Setup permissions and move binary
 setup_binary() {
     info "Installing k8s-frontman to ${BIN_DIR}/k8s-frontman"
-    tar -xzf "${TMP_BIN}" -C "${TMP_DIR}"
     
-    if [[ ! -f "${TMP_DIR}/k8s-frontman" ]]; then
-        fatal "Failed to extract k8s-frontman binary from archive"
-    fi
-    
-    chmod 755 "${TMP_DIR}/k8s-frontman"
+    chmod 755 "${TMP_BIN}"
     
     if [[ -w "${BIN_DIR}" ]]; then
-        mv -f "${TMP_DIR}/k8s-frontman" "${BIN_DIR}"
+        mv -f "${TMP_BIN}" "${BIN_DIR}/k8s-frontman"
     else
-        sudo mv -f "${TMP_DIR}/k8s-frontman" "${BIN_DIR}"
+        sudo mv -f "${TMP_BIN}" "${BIN_DIR}/k8s-frontman"
     fi
 }
 

@@ -1,6 +1,6 @@
 # k8s-frontman CLI Installation
 
-Binaries for Windows, macOS, and Linux AMD64 are available for download on the 
+Binaries for Windows (x64/ARM64), macOS (x64/ARM64), and Linux (x64/ARM64) are available for download on the 
 [release page](https://github.com/pmdevers/k8s-frontman/releases).
 
 ## Linux and macOS Installation
@@ -12,10 +12,11 @@ curl -s https://raw.githubusercontent.com/pmdevers/k8s-frontman/main/install/set
 ```
 
 The install script does the following:
-* attempts to detect your OS
-* downloads and unpacks the release tar file in a temporary directory
+* attempts to detect your OS and architecture
+* downloads the appropriate binary for your platform
+* verifies the checksum
 * copies the k8s-frontman binary to `/usr/local/bin`
-* removes the temporary directory
+* removes temporary files
 
 ## Windows Installation
 
@@ -32,11 +33,12 @@ Or download and run the script manually:
 ```
 
 The PowerShell install script does the following:
-* detects your Windows architecture (AMD64 or ARM64)
-* downloads and unpacks the release archive in a temporary directory
+* detects your Windows architecture (x64 or ARM64)
+* downloads the appropriate binary for your platform
+* verifies the checksum
 * copies the k8s-frontman binary to `%LOCALAPPDATA%\k8s-frontman`
 * adds the installation directory to your user PATH
-* removes the temporary directory
+* removes temporary files
 
 ### Optional Parameters
 

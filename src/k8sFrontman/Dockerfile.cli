@@ -1,0 +1,47 @@
+# ============================
+# Multi-platform CLI Build
+# ============================
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+ARG VERSION=0.0.0-dev
+
+WORKDIR /src
+
+# Copy everything
+COPY . .
+
+# Build k8sFrontman for all platforms
+RUN mkdir -p /out && \
+    for rid in linux-x64 linux-arm64 win-x64 win-arm64 osx-x64 osx-arm64; do \
+        name=$(echo "$rid" | sed 's/^win-/windows_/;s/^osx-/darwin_/;s/-/_/'); \
+        echo "Building for $rid..."; \
+        dotnet publish k8sFrontman.csproj -c Release \
+            -r "$rid" \
+            --self-contained true \
+            /p:PublishSingleFile=true \
+            /p:Version=${VERSION} \
+            /p:PublishTrimmed=true \
+            /p:EnableCompressionInSingleFile=true \
+            -o /tmp/build/$rid; \
+        # Rename output binary
+        if [ "$rid" = "win-x64" ] || [ "$rid" = "win-arm64" ]; then \
+            mv /tmp/build/$rid/k8sFrontman.exe /out/k8s-frontman_${name}.exe; \
+        else \
+            mv /tmp/build/$rid/k8sFrontman /out/k8s-frontman_${name}; \
+        fi; \
+    done
+
+# ============================
+# CLI export stage
+# ============================
+FROM scratch AS cli-export
+
+ARG VERSION=0.0.0-dev
+
+# Copy k8sFrontman binaries with naming format: k8s-frontman_{version}_{os}_{arch}
+COPY --from=build /out/k8s-frontman_linux_x64 /k8s-frontman_${VERSION}_linux_x64
+COPY --from=build /out/k8s-frontman_linux_arm64 /k8s-frontman_${VERSION}_linux_arm64
+COPY --from=build /out/k8s-frontman_windows_x64.exe /k8s-frontman_${VERSION}_windows_x64.exe
+COPY --from=build /out/k8s-frontman_windows_arm64.exe /k8s-frontman_${VERSION}_windows_arm64.exe
+COPY --from=build /out/k8s-frontman_darwin_x64 /k8s-frontman_${VERSION}_darwin_x64
+COPY --from=build /out/k8s-frontman_darwin_arm64 /k8s-frontman_${VERSION}_darwin_arm64

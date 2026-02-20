@@ -42,6 +42,12 @@ jobs:
           ./cli/k8s-frontman_${{ steps.version.outputs.version }}_linux_x64 install \
             --output install.yaml
 
+      - name: Generate checksums
+        run: |
+          cd cli
+          sha256sum k8s-frontman_* > k8s-frontman_${{ steps.version.outputs.version }}_checksums.txt
+          cd ..
+
       - name: Install Syft
         uses: anchore/sbom-action/download-syft@v0.17.0
 

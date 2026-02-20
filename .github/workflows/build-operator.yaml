@@ -45,6 +45,19 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "push=${PUSH}" >> $GITHUB_OUTPUT
 
+      - name: Download CLI artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli
+
+      - name: Prepare operator binary
+        run: |
+          mkdir -p operator-context
+          cp cli/k8s-frontman_${{ steps.version.outputs.version }}_linux_x64 operator-context/k8sFrontman
+          chmod +x operator-context/k8sFrontman
+          cp src/k8sFrontman/Dockerfile.operator operator-context/Dockerfile
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -59,9 +72,8 @@ jobs:
       - name: Build and push operator image
         uses: docker/build-push-action@v6
         with:
-          context: src/k8sFrontman
-          file: src/k8sFrontman/Dockerfile
-          target: operator
+          context: operator-context
+          file: operator-context/Dockerfile
           push: ${{ steps.version.outputs.push }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/k8s-frontman:${{ steps.version.outputs.version }}

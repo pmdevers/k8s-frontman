@@ -1,0 +1,35 @@
+# ============================
+# Runtime image for operator
+# ============================
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled-extra AS final
+
+ARG APP_UID=1654
+
+WORKDIR /
+
+LABEL org.opencontainers.image.title="k8sFrontman" \
+      org.opencontainers.image.description="Kubernetes Operator built with k8sOperator" \
+      org.opencontainers.image.vendor="k8sOperator" \
+      org.opencontainers.image.source="https://github.com/pmdevers/k8sOperator"
+
+# Use specific non-root user ID for better security
+USER $APP_UID
+
+# Set environment variables
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    DOTNET_EnableDiagnostics=0 \
+    DOTNET_GCHeapHardLimit=0x8000000 \
+    DOTNET_GCHeapHardLimitPercent=75 \
+    COMPlus_EnableDiagnostics=0
+
+# Copy pre-built executable from context
+COPY --chown=$APP_UID:$APP_UID k8sFrontman .
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD ["/k8sFrontman", "health"] || exit 1
+
+# Expose metrics port (standard for Kubernetes operators)
+EXPOSE 8080
+
+ENTRYPOINT ["/k8sFrontman", "operator"]

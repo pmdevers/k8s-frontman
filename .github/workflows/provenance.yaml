@@ -32,8 +32,25 @@ jobs:
           name: cli-binaries
           path: cli
 
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator/actions/generator@v2.0.0
+      # Note: Full SLSA provenance generation requires calling
+      # slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml
+      # directly from the top-level workflow, not from within a reusable workflow.
+      # For now, checksums in release.yaml provide integrity verification.
+      # To add SLSA provenance, integrate generator_generic_slsa3.yml in cd.yaml
+      
+      - name: Generate provenance metadata
+        run: |
+          echo "Build metadata for k8s-frontman ${{ steps.version.outputs.version }}" > provenance.txt
+          echo "Commit: ${{ github.sha }}" >> provenance.txt
+          echo "Ref: ${{ github.ref }}" >> provenance.txt
+          echo "Actor: ${{ github.actor }}" >> provenance.txt
+          echo "Workflow: ${{ github.workflow }}" >> provenance.txt
+          echo "" >> provenance.txt
+          echo "Artifacts:" >> provenance.txt
+          ls -lh cli/ >> provenance.txt
+
+      - name: Upload provenance metadata
+        uses: actions/upload-artifact@v4
         with:
-          artifact_path: "cli"
-          upload_assets: true
+          name: provenance-metadata
+          path: provenance.txt
