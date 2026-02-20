@@ -352,3 +352,5 @@ _site/
 docs/api/
 
 .vscode/
+
+src/k8sFrontman/cli/

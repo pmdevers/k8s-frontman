@@ -1,0 +1,52 @@
+name: Continuous Delivery
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+  packages: write
+  actions: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  version:
+    uses: ./.github/workflows/version.yaml
+
+  build-operator:
+    needs: [test, version]
+    uses: ./.github/workflows/build-operator.yaml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.version }}
+
+  build-cli:
+    needs: [test, version]
+    uses: ./.github/workflows/build-cli.yaml
+    with:
+      version: ${{ needs.version.outputs.version }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [version, build-operator, build-cli]
+    uses: ./.github/workflows/release.yaml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      image: ${{ needs.build-operator.outputs.image }}
+
+  provenance:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [version, build-cli]
+    uses: ./.github/workflows/provenance.yaml
+    with:
+      version: ${{ needs.version.outputs.version }}

@@ -1,0 +1,39 @@
+name: SLSA Provenance
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version for provenance'
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  actions: read
+
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract version
+        id: version
+        run: |
+          VERSION="${{ inputs.version }}"
+          # Remove 'v' prefix if present
+          VERSION=${VERSION#v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Download CLI artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli
+
+      - name: Generate SLSA provenance
+        uses: slsa-framework/slsa-github-generator/actions/generator@v2.0.0
+        with:
+          artifact_path: "cli"
+          upload_assets: true

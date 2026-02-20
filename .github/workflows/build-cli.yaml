@@ -1,0 +1,51 @@
+name: Build CLI
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to build'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION="${{ inputs.version }}"
+          # Remove 'v' prefix if present
+          VERSION=${VERSION#v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build CLI binaries for all platforms
+        uses: docker/build-push-action@v6
+        with:
+          context: src/k8sFrontman
+          file: src/k8sFrontman/Dockerfile
+          target: cli-export
+          push: false
+          build-args: |
+            VERSION=${{ steps.version.outputs.version }}
+          outputs: type=local,dest=src/k8sFrontman/cli
+
+      - name: Upload CLI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: src/k8sFrontman/cli/
+          retention-days: 7
