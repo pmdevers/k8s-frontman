@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>k8s.Frontman</RootNamespace>
 
-    <Company>pmdevers</Company>
-
+    <ContainerRepository>pmdevers/k8s-frontman</ContainerRepository>
+    
     <CreateOperatorLaunchSettings>true</CreateOperatorLaunchSettings>
     <GenerateOperatorDockerfile>true</GenerateOperatorDockerfile>
     
@@ -19,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
-    <PackageReference Include="k8sOperator" Version="1.0.0-alpha0014" />
+    <PackageReference Include="k8sOperator" Version="1.0.0-alpha0015" />
   </ItemGroup>
 
   <ItemGroup>

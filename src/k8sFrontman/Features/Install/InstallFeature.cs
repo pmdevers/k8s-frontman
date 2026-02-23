@@ -3,6 +3,7 @@ using k8s.Frontman.Features.Releases;
 using k8s.Models;
 using k8s.Operator.Configuration;
 using k8s.Operator.Generation;
+using System.Collections.Frozen;
 
 namespace k8s.Frontman.Features.Install;
 
@@ -20,8 +21,13 @@ public static class InstallFeature
                 deployment.Spec.Template.Spec.Containers[0].Ports ??= [];
                 deployment.Spec.Template.Spec.Containers[0].Ports.Add(new()
                 {
-                    ContainerPort = 8080,
-                    Name = "http",
+                    ContainerPort = Frontman.WebPort,
+                    Name = nameof(Frontman.WebPort).ToLowerInvariant(),
+                });
+                deployment.Spec.Template.Spec.Containers[0].Ports.Add(new()
+                {
+                    ContainerPort = Frontman.ManagmentPort,
+                    Name = nameof(Frontman.ManagmentPort).ToLowerInvariant(),
                 });
             };
             return config;
@@ -37,7 +43,8 @@ public static class InstallFeature
                     .WithSpec(s =>
                     {
                         s.WithSelector("operator", config.Name);
-                        s.WithPort(8080, 8080);
+                        s.WithPort(nameof(Frontman.WebPort).ToLowerInvariant(), Frontman.WebPort, Frontman.WebPort);
+                        s.WithPort(nameof(Frontman.ManagmentPort).ToLowerInvariant(), Frontman.ManagmentPort, Frontman.ManagmentPort);
                     }).Build()
             );
 

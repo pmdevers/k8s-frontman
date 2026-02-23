@@ -3,6 +3,7 @@
         "Operator": {
             "commandName": "Project",
             "commandLineArgs": "operator",
+            "externalUrlConfiguration": true,
             "environmentVariables": {
                 "OPERATOR__NAMESPACE": "default",
                 "ASPNETCORE_ENVIRONMENT": "Development",
