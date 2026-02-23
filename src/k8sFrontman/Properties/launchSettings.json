@@ -20,6 +20,15 @@
             },
             "dotnetRunMessages": true
         },
+        "Install ns": {
+            "commandName": "Project",
+            "commandLineArgs": "install -n frontman-system > install.yaml",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": ""
+            },
+            "dotnetRunMessages": true
+        },
         "Create Provider": {
             "commandName": "Project",
             "commandLineArgs": "create provider > provider.yaml",
