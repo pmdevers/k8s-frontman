@@ -1,9 +1,6 @@
 name: Build Operator
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_call:
     inputs:
       version:

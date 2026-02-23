@@ -1,9 +1,6 @@
 name: Build CLI
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_call:
     inputs:
       version:
