@@ -1,11 +1,10 @@
-﻿using k8s.Frontman.Features.Providers.AzureBlob;
-using k8s.Frontman.Features.Providers.File;
+﻿using k8s.Frontman.Infrastructure.Providers.AzureBlob;
+using k8s.Frontman.Infrastructure.Providers.File;
 using k8s.Models;
 using k8s.Operator.Generation;
 using Microsoft.Extensions.FileProviders;
 
-namespace k8s.Frontman.Features.Providers;
-
+namespace k8s.Frontman.Domain.Entities;
 
 [KubernetesEntity(Group = KubeGroup, ApiVersion = KubeApiVersion, Kind = KubeKind, PluralName = KubePluralName)]
 [AdditionalPrinterColumn("Refresh", "string", "", ".spec.interval")]
@@ -43,14 +42,15 @@ public class V1ProviderSpec
     [Default("5m")]
     public string Interval { get; set; } = "5m";
 }
-public class V1ProviderStatus
-{
-    public int NumberOfReleases { get; set; } = 0;
-    public string[] Versions { get; set; } = [];
-}
 
 public enum ProviderTypes
 {
     File,
     AzureBlob
+}
+
+public class V1ProviderStatus
+{
+    public int NumberOfReleases { get; set; } = 0;
+    public string[] Versions { get; set; } = [];
 }

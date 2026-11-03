@@ -1,12 +1,10 @@
-﻿using k8s.Frontman.Features.Providers;
+﻿using k8s.Frontman.Domain.Entities;
 using k8s.Operator.Informer;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace k8s.Frontman.Features.Releases;
 
-public class ReleaseMiddleware(RequestDelegate next,
-    IInformer<V1Release> releases,
-    IInformer<V1Provider> providers)
+public class ReleaseMiddleware(RequestDelegate next, IInformer<V1Release> releases, IInformer<V1Provider> providers)
 {
     public async Task InvokeAsync(HttpContext context)
     {

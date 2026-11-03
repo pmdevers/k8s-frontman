@@ -1,7 +1,7 @@
 ﻿using k8s.Models;
 using k8s.Operator.Generation;
 
-namespace k8s.Frontman.Features.Releases;
+namespace k8s.Frontman.Domain.Entities;
 
 [KubernetesEntity(Group = KubeGroup, ApiVersion = KubeApiVersion, Kind = KubeKind, PluralName = KubePluralName)]
 [AdditionalPrinterColumn("Url", "string", "", ".spec.url")]

@@ -1,5 +1,4 @@
-﻿using k8s.Frontman.Features.Providers;
-using k8s.Models;
+﻿using k8s.Frontman.Domain.Entities;
 using k8s.Operator.Generation;
 using k8s.Operator.Reconciler;
 
@@ -7,64 +6,61 @@ namespace k8s.Frontman.Features.Releases;
 
 public static class ReleaseReconciler
 {
-    public static async Task ReconcileAsync(ReconcileContext<V1Release> context)
+    public static Task<IReconcileResult> ReconcileAsync(ReconcileContext context)
     {
+        var resource = context.GetResource<V1Release>();
         var informer = context.GetInformer<V1Release>();
         var providers = context.GetInformer<V1Provider>();
 
-        var current = informer.Indexer.Get(context.Resource);
-        var provider = providers.Indexer.Get(context.Resource.Spec.Provider, context.Resource.Metadata.NamespaceProperty);
-
-        context.Update(x =>
-        {
-            x.WithLabel("managed-by", context.Configuration.Name);
-            x.WithLabel("processed", "true");
-            x.WithLabel($"{context.Resource.ApiGroup()}/provider", context.Resource.Spec.Provider);
-        });
+        var current = informer.Indexer.Get(resource);
+        var provider = providers.Indexer.Get(resource.Spec.Provider, resource.Metadata.NamespaceProperty);
 
         if (provider is null)
         {
-            context.Update(x =>
+            return Task.FromResult(ReconcileResult.Success<V1Release>(x =>
             {
+                UpdateLabels(x, context.Configuration.Name, resource.Spec.Provider);
                 x.WithStatus(x =>
                 {
-                    x.Message = $"Provider '{context.Resource.Spec.Provider}' not found.";
+                    x.Message = $"Provider '{resource.Spec.Provider}' not found.";
                 });
-            });
-
-            return;
+            }));
         }
 
-        if (!provider.Status!.Versions.Contains(context.Resource.Spec.Version))
+        if (!provider.Status!.Versions.Contains(resource.Spec.Version))
         {
-            context.Update(x =>
+            return Task.FromResult(ReconcileResult.Requeue<V1Release>(TimeSpan.FromSeconds(30), x =>
             {
+                UpdateLabels(x, context.Configuration.Name, resource.Spec.Provider);
                 x.WithStatus(x =>
                 {
-                    x.Message = $"Version '{context.Resource.Spec.Version}' not found.";
-                    if (current?.Status?.CurrentVersion != context.Resource.Spec.Version)
+                    x.Message = $"Version '{resource.Spec.Version}' not found.";
+                    if (current?.Status?.CurrentVersion != resource.Spec.Version)
                     {
                         x.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
                     }
                 });
-            });
-
-            await context.Queue.Requeue(context.Resource, TimeSpan.FromSeconds(30), context.CancellationToken);
-
-            return;
+            }));
         }
 
-        context.Update(x =>
+        return Task.FromResult(ReconcileResult.Success<V1Release>(x =>
         {
             x.WithStatus(x =>
             {
                 x.Message = string.Empty;
-                x.CurrentVersion = context.Resource.Spec.Version;
-                if (current?.Status?.CurrentVersion != context.Resource.Spec.Version)
+                x.CurrentVersion = resource.Spec.Version;
+                if (current?.Status?.CurrentVersion != resource.Spec.Version)
                 {
                     x.PreviousVersion = current?.Status?.CurrentVersion ?? string.Empty;
                 }
             });
-        });
+        }));
+    }
+
+    private static void UpdateLabels(IObjectBuilder<V1Release> x, string name, string provider)
+    {
+        x.WithLabel("managed-by", name);
+        x.WithLabel("processed", "true");
+        x.WithLabel($"{V1Release.KubeGroup}/provider", provider);
     }
 }

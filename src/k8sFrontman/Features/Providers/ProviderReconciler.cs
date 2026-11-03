@@ -1,13 +1,17 @@
-﻿using k8s.Operator.Generation;
+﻿using k8s.Frontman.Domain.Entities;
+using k8s.Operator.Generation;
 using k8s.Operator.Reconciler;
 
 namespace k8s.Frontman.Features.Providers;
 
 public static partial class ProviderReconciler
 {
-    public static async Task ReconcileAsync(ReconcileContext<V1Provider> context)
+    public static async Task<IReconcileResult> ReconcileAsync(ReconcileContext context)
     {
-        var fileprovider = context.Resource.GetFileProvider();
+        var resource = context.GetResource<V1Provider>();
+        var fileprovider = resource.GetFileProvider();
+
+        var delay = ResyncIntervalAttribute.ParseDuration(resource.Spec.Interval);
 
         if (fileprovider is not null)
         {
@@ -15,7 +19,7 @@ public static partial class ProviderReconciler
                 .Where(x => x.IsDirectory)
                 .Select(x => x.Name).ToList();
 
-            context.Update(x =>
+            return ReconcileResult.Requeue<V1Provider>(delay, x =>
             {
                 x.WithLabel("managed-by", context.Configuration.Name);
                 x.WithLabel("processed", "true");
@@ -27,6 +31,7 @@ public static partial class ProviderReconciler
             });
         }
 
-        await context.Queue.Requeue(context.Resource, ResyncIntervalAttribute.ParseDuration(context.Resource.Spec.Interval));
+
+        return ReconcileResult.Requeue<V1Provider>(delay);
     }
 }

@@ -4,7 +4,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 
-namespace k8s.Frontman.Features.Providers.AzureBlob;
+namespace k8s.Frontman.Infrastructure.Providers.AzureBlob;
 
 public class AzureBlobFileProvider(string connectionString, string containerName, string root) : IFileProvider
 {

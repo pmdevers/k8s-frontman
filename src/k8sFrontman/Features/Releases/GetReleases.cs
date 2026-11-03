@@ -1,16 +1,20 @@
-﻿using k8s.Operator.Informer;
+﻿using k8s.Frontman.Domain.Entities;
+using k8s.Operator.Informer;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace k8s.Frontman.Features.Releases;
 
 public static class GetReleases
 {
-    public static Results<Ok<List<ReleaseResponse>>, BadRequest> Handle(IInformer<V1Release> releases)
+    public static Results<Ok<ReleaseResponse[]>, BadRequest> Handle(SharedInformerFactory factory)
     {
+        var releases = factory.GetInformer<V1Release>();
         var releasesList = releases.List()
             .Select(x => new ReleaseResponse(x.Metadata.Name, x.Spec.Url, x.Status?.CurrentVersion ?? "unknown", x.Status?.PreviousVersion ?? "unknown"))
-            .ToList();
+            .ToArray();
 
         return TypedResults.Ok(releasesList);
     }
+
+    public record ReleaseResponse(string Name, string Url, string CurrentVersion, string PreviousVersion);
 }
